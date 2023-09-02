@@ -3,10 +3,30 @@
 
 // const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
-  return (
+import { useSession, signIn, signOut } from "next-auth/react"
+import Nav from "@/components/Nav"
 
-    <div className='bg-red-500'>TEST</div>
+export default function Home() {
+  const { data: session } = useSession()
+  if(!session) {
+    return (
+      <div className='bg-blue-900 w-screen h-screen flex items-center'>
+      <div className='text-center w-full'>
+        <button onClick={() => signIn('google')} className='bg-white p-2 px-4 rounded-lg'>Login with Google</button>
+      </div>
+    </div>
+    )
+  }
+  return (
+    <div className='bg-blue-900 min-h-screen'>
+      <Nav />
+      <div>logged in as {session.user.email}</div>
+    </div>
+    // <div className='bg-blue-900 w-screen h-screen flex items-center'>
+    //   <div className='text-center w-full'>
+    //     <button className='bg-white p-2 px-4 rounded-lg'>Login with Google</button>
+    //   </div>
+    // </div>
     // <main
     //   className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
     // >
