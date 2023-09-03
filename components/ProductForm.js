@@ -42,14 +42,14 @@ export default function ProductForm({
             for (const file of files) {
                 data.append('file', file);
             }
-            await fetch('/api/upload', {
+            const res = await fetch('/api/upload', {
                 method: 'POST',
                 body: data,
             })
             // const res = await axios.post('/api/upload', data, {
             //     headers: {'Content-Type':'multipart/form-data'},
             // });
-            // console.log(res)
+            console.log(res)
         }
     }
     return (
