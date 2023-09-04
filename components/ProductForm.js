@@ -7,11 +7,12 @@ export default function ProductForm({
     title: currentTitle,
     description: currentDescription,
     price: currentPrice,
-    images,
+    images:currentImages,
     }) {
     const [title,setTitle] = useState(currentTitle || '');
     const [description,setDescription] = useState(currentDescription || '');
     const [price,setPrice] = useState(currentPrice || '');
+    const [images,setImages] = useState(currentImages || []);
     const [goToProducts,setGoToProducts] = useState(false);
     const router = useRouter();
     // console.log({_id});
@@ -42,14 +43,10 @@ export default function ProductForm({
             for (const file of files) {
                 data.append('file', file);
             }
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                body: data,
-            })
-            // const res = await axios.post('/api/upload', data, {
-            //     headers: {'Content-Type':'multipart/form-data'},
-            // });
-            console.log(res)
+            const res = await axios.post('/api/upload', data);
+            setImages(oldImages => {
+                return [...oldImages, res.data.links];
+            });
         }
     }
     return (
@@ -64,7 +61,12 @@ export default function ProductForm({
 
         <label>Photos</label>
 
-        <div className="mb-2">
+        <div className="mb-2 flex flex-wrap gap-2">
+            {!!images?.length && images.map(link => (
+                <div key={link} className="h-24">
+                    <img src={link} alt="" className="rounded-lg"/>
+                </div>
+            ))}
             <label className="w-24 b-24 cursor-pointer text-center flex items-center justify-center gap-1 text-sm text-gray-500 rounded-lg bg-gray-200">
             <svg xmlns="http://www.w3.org/2000/svg" 
                 x="0px" y="0px" 
