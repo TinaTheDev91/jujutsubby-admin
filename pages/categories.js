@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Categories() {
+    const [editedCategory,setEditedCategory] = useState(null);
     const [name,setName] = useState('');
     const [parentCategory,setParentCategory] = useState('');
     const [categories,setCategories] = useState([]);
@@ -17,14 +18,31 @@ export default function Categories() {
     }
     async function saveCategory(ev){
         ev.preventDefault();
-        await axios.post('/api/categories', {name,parentCategory});
+        const data = {name, parentCategory}
+        if(editedCategory) {
+            data._id = editedCategory._id;
+            await axios.put('/api/categories', data);
+            setEditedCategory(null);
+        } else {
+            await axios.post('/api/categories', data);
+        }
         setName('');
         fetchCategories();
+    }
+
+    function editCategory(category){
+        setEditedCategory(category);
+        setName(category.name);
+        setParentCategory(category.parent?._id);
     }
     return (
         <Layout>
             <h1>Categories</h1>
-            <label>New Category Name</label>
+            <label>
+                {editedCategory 
+                ? `Edit Category ${editedCategory.name}`
+                : 'Create New Category'}
+            </label>
             <form onSubmit={saveCategory} className="flex gap-1">                
                 <input 
                     className="mb-0" 
@@ -59,7 +77,11 @@ export default function Categories() {
                         <td>{category.name}</td>
                         <td>{category?.parent?.name}</td>
                         <td>
-                                <button className="btn-primary mr-1">Edit</button>
+                                <button 
+                                    onClick={() => editCategory(category)} 
+                                    className="btn-primary mr-1">
+                                        Edit
+                                </button>
                                 <button className="btn-primary">Delete</button>
 
                         </td>
